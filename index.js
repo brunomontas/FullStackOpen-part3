@@ -1,7 +1,16 @@
 const express = require('express');
+var morgan = require('morgan');
 const app = express();
 
 app.use(express.json());
+morgan.token('object', (request) => {
+  return JSON.stringify(request.body);
+});
+app.use(
+  morgan(
+    ':method :url :status :res[content-length] - :response-time ms :object '
+  )
+);
 
 let persons = [
   {
@@ -62,7 +71,6 @@ app.delete('/api/persons/:id', (request, response) => {
 });
 
 app.post('/api/persons', (request, response) => {
-  console.log('request body', request.body);
   const body = request.body;
   if (!body.name) {
     return response.status(400).json({
